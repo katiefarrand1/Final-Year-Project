@@ -1,0 +1,54 @@
+{% extends 'layout.html' %}
+
+{% block title %}Favourites{% endblock %}
+
+{% block content %}
+
+<h2>Favourites</h2>
+<form action="{{ url_for('filter_favourite') }}" method="POST">
+    <label for="filter">
+        <i class="fas fa-user"></i>
+    </label>
+    <input type="text" name="filter" placeholder="Filter" id="filter" required>
+    <label for="password">
+        <i class="fas fa-lock"></i>
+    </label>
+    <div class="msg">{{ msg }}</div>
+    <input type="submit" value="Search">
+
+</form>
+
+
+
+<div class="container"  style="margin-top:100px;">
+    <div class="row">
+        <div class="col-sm-12">
+            {% for datas in data %}
+                <div class="card text-white bg-primary mb-3">
+                    <a class="nav-link active" href = "{{ url_for('get_venue', id = datas['result']['place_id']) }}" ></a> 
+                    <div class="card-header">
+                        {{ datas['result']['name'] }}
+                    </div>
+                    <div class="card-body">
+                        {{ datas['result']['formatted_address'] }}
+
+                    </div>
+                    <div class="card-body">
+
+                        <img src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=datas['result']['photos']&key=AIzaSyAvi7VtnLjgF1ezfFdBijVEV_l0upGSJB0"  class="rounded mx-auto d-block"   alt="...">
+                    </div>              
+                </div>
+                    <div class="card-body">
+                        <a class="btn btn-primary" href= "{{url_for('delete_favourite', id = datas['result']['place_id'])}}" role="button">Delete</a>
+
+                    </div>
+            {%  endfor %}}}
+            <div class="msg">{{ msg }}</div>
+        </div> <!--col-->
+    </div>      <!--row-->
+</div>          <!--container-->
+
+
+{% endblock %}
+
+

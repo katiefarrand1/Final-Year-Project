@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'layout.html' %}
+
+    
+    <head>
+        <title>Here is your Pocket Travel Guide</title>
+    </head>
+
+    {%block content%}
+    <body>
+
+
+        <form method="POST" action ="/venues">
+            <p>Where to?</p>
+            <p><input type="text" name="addr" id ="location" value = {{data}} 
+                ></p>
+    
+            <label for ="search_criteria">What to do</label>
+            <select id = "activity" name="act">
+            <option value="restaurant">Food</option>
+            <option value="bar">Bars/Nightclubs</option>
+            <option value="shopping_mall">Shopping</option>
+            <option value="cafe">Coffee</option>
+            <option value="museum">Arts</option>
+            <option value="park">Outdoors</option>
+            <option value="sights">Sights</option>
+            <option value="trending">Trending Venues</option>
+
+
+            
+        </select>                           
+
+                            
+                            
+            <p><input type = "submit" value = "submit" /></p>
+
+        </form>
+        <a href="{{ url_for('get_current_location')}}">
+                <img src="/static/images/current_location.png" alt="Current Location" id = "current_location" width="80" height="80" />
+            </a>
+
+    </body>
+    {%endblock%}
+    
+</html>
