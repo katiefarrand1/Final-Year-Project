@@ -5,8 +5,9 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+
 body {
-    background-color: #435165;
+    background-color: #154180 !important;
     margin: 0;
 }
 .login, .register {
@@ -146,12 +147,6 @@ body.loggedin {
   margin: 0 0 10px 0;
 }
 
-form
-{
-  display: inline-block;
-  background-color: gold;
-  padding: 6px;
-}
 
 label{
   display: block;
