@@ -3,18 +3,20 @@
 {% block title %}Favourites{% endblock %}
 
 {% block content %}
-
-<h2>Favourites</h2>
-<form action="{{ url_for('filter_favourite') }}" method="POST">
+<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+          
+    <main class="d-flex flex-column align-items-center px-3">
+<h2 class="text-white-50">Favourites</h2>
+<form class="d-flex" action="{{ url_for('filter_favourite') }}" method="POST">
     <label for="filter">
         <i class="fas fa-user"></i>
     </label>
-    <input type="text" name="filter" placeholder="Filter" id="filter" required>
+    <input class="form-control me-2" type="text" name="filter" placeholder="Filter" id="filter" required>
     <label for="password">
         <i class="fas fa-lock"></i>
     </label>
     <div class="msg">{{ msg }}</div>
-    <input type="submit" value="Search">
+    <input type="submit" class="btn btn-outline-primary" value="Search">
 
 </form>
 
@@ -24,12 +26,14 @@
     <div class="row">
         <div class="col-sm-12">
             {% for datas in data %}
-                <div class="card text-white bg-primary mb-3">
-                    <a class="nav-link active" href = "{{ url_for('get_venue', id = datas['result']['place_id']) }}" ></a> 
+                <div class="card mb-3">
+                    <a class="nav-link active" href = "{{ url_for('get_venue', id = datas['result']['place_id']) }}" >
                     <div class="card-header">
                         {{ datas['result']['name'] }}
                     </div>
-                    <div class="card-body">
+                </a> 
+                    <div class="card-body p-4">
+                        <p>Address: </p>
                         {{ datas['result']['formatted_address'] }}
 
                     </div>
@@ -37,16 +41,15 @@
 
                         <img src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=datas['result']['photos']&key=AIzaSyAvi7VtnLjgF1ezfFdBijVEV_l0upGSJB0"  class="rounded mx-auto d-block"   alt="...">
                     </div>              
+                    <a class="btn btn-danger" href= "{{url_for('delete_favourite', id = datas['result']['place_id'])}}" role="button">Delete</a>
                 </div>
-                    <div class="card-body">
-                        <a class="btn btn-primary" href= "{{url_for('delete_favourite', id = datas['result']['place_id'])}}" role="button">Delete</a>
-
-                    </div>
             {%  endfor %}}}
             <div class="msg">{{ msg }}</div>
         </div> <!--col-->
     </div>      <!--row-->
 </div>          <!--container-->
+</main>
+</div>
 
 
 {% endblock %}
