@@ -472,7 +472,7 @@ def delete_venue_reviews(v_id, r_id):
 
     cursor.execute("DELETE FROM reviews WHERE id = %s",(reviewID,))
 
-    return get_venue(venueID)
+    return get_venue(venueID) 
 
 
 
