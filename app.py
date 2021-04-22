@@ -9,6 +9,7 @@ import mysql.connector
 import MySQLdb.cursors
 from geopy.geocoders import Nominatim
 from flask_simple_geoip import SimpleGeoIP
+import hashlib, binascii, os
 
 
 
@@ -30,14 +31,11 @@ app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'password1'
 app.config['MYSQL_DB'] = 'projectdb'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
-app.config["GEOIPIFY_API_KEY"] = "at_xVYxEOVei1KehHkjpqkFoWPJBXJW9"
 
 
 #Initialise SQL 
 mysql = MySQL(app)
 API_KEY = 'AIzaSyB9uGV437zMV4Ne7yM3a3twM7CUALUcm2g'
-GEOIPIFY_API_KEY = 'at_MuzI8z9iadoOwbkfh5Jx12hw9wgZK'
-simple_geoip = SimpleGeoIP(app)
 
 
 
@@ -71,20 +69,23 @@ def login():
         password = request.form['password']
         # Check if account exists using MySQL
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM users WHERE username = %s AND password = %s', (username, password,))
+        cursor.execute('SELECT * FROM users WHERE username = %s ', (username,))
         # Fetch one record and return result
         user_account = cursor.fetchone()
         # If account exists in accounts table in out database
-        if user_account:
-            # Create session data, we can access this data in other routes
-            session['loggedin'] = True
-            session["id"] = user_account["id"]
-            session["username"] = user_account["username"]
-            # Redirect to home page
-            return redirect(url_for('main'))
+        if user_account :
+            if verify_password(user_account["password"], password) == 'successful':
+                # Create session data, we can access this data in other routes
+                session['loggedin'] = True
+                session["id"] = user_account["id"]
+                session["username"] = user_account["username"]
+                # Redirect to home page
+                return redirect(url_for('main'))
+            else:
+                msg = 'Incorrect Password'
         else:
             # Account doesnt exist or username/password incorrect
-            msg = 'Incorrect username/password!'
+            msg = 'Incorrect Username'
     return render_template('login.html', msg = msg)
 
 @app.route('/logout')
@@ -119,16 +120,36 @@ def register():
         elif not username or not password or not email:
             msg = 'Please fill out the form!'
         else:
+            encrypt_pw = hash_password(password)
             # Account doesnt exists and the form data is valid, now insert new account into users table
             cursor = mysql.connection.cursor()
-            cursor.execute("INSERT INTO users VALUES (NULL, %s, %s, %s)", (username, password, email,))
+            cursor.execute("INSERT INTO users VALUES (NULL, %s, %s, %s)", (username, encrypt_pw, email,))
             mysql.connection.commit()
             msg = 'You have successfully registered!'
             return redirect(url_for('main'))
     elif request.method ==  'POST':   
         msg = 'Please fill out the form to continue'
     #show registration form and error message if error occured 
-    return render_template('register.html', msg = msg )     
+    return render_template('register.html', msg = msg )   
+
+def hash_password(password):
+    salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
+    pwdhash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'), 
+                                salt, 100000)
+    pwdhash = binascii.hexlify(pwdhash)
+    print((salt + pwdhash).decode('ascii') )
+    return (salt + pwdhash).decode('ascii')  
+
+def verify_password(stored_password, provided_password):
+    """Verify a stored password against one provided by user"""
+    salt = stored_password[:64]
+    stored_password = stored_password[64:]
+    pwdhash = hashlib.pbkdf2_hmac('sha512', 
+                                  provided_password.encode('utf-8'), 
+                                  salt.encode('ascii'), 
+                                  100000)
+    pwdhash = binascii.hexlify(pwdhash).decode('ascii')
+    return 'successful'
 
 @app.route('/profile')
 def profile():
