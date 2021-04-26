@@ -395,16 +395,7 @@ def get_favourites():
     
 
 
-@app.route('/favourites/<string:id>', methods = ['GET','DELETE'])
-def delete_favourite(id):
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    venueID = id
-    print(venueID)
-    cursor.execute("DELETE FROM favourites WHERE venueID = %s",(venueID,))
-    mysql.connection.commit()
-    msg = "Favourite Removed"
 
-    return redirect(url_for('get_favourites'))
 
 
 @app.route('/favourites/', methods =['GET','POST'])
